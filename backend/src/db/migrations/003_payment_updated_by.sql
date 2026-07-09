@@ -1,0 +1,5 @@
+ALTER TABLE supplier_payments
+  ADD COLUMN IF NOT EXISTS updated_by UUID REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE supplier_payments
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ;

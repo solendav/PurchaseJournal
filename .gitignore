@@ -1,0 +1,26 @@
+node_modules/
+.env
+backend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# Flutter
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/.pub-cache/
+mobile/.pub/
+mobile/dart_defines.prod.json
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/app/debug/
+mobile/android/app/profile/
+mobile/android/app/release/
