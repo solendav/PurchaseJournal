@@ -64,55 +64,61 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
     }
   }
 
-  Future<void> _addPurchase({required bool scan}) async {
-    final route = scan
-        ? '${RouteNames.purchaseScan}?supplierId=${widget.supplierId}'
-        : '${RouteNames.purchaseNew}?supplierId=${widget.supplierId}';
-    await context.push(route);
+  Future<void> _addPurchase() async {
+    await context.push('${RouteNames.purchaseNew}?supplierId=${widget.supplierId}');
     _load();
   }
 
-  void _showAddPurchaseOptions() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusLg)),
-      ),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.page),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Add purchase',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 12),
-              ListTile(
-                leading: const Icon(Icons.document_scanner_outlined, color: AppColors.primary),
-                title: const Text('Scan receipt'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _addPurchase(scan: true);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.edit_note_outlined, color: AppColors.primary),
-                title: const Text('Enter manually'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _addPurchase(scan: false);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Scan receipt — disabled until release build supports ML Kit R8.
+  // Future<void> _addPurchase({required bool scan}) async {
+  //   final route = scan
+  //       ? '${RouteNames.purchaseScan}?supplierId=${widget.supplierId}'
+  //       : '${RouteNames.purchaseNew}?supplierId=${widget.supplierId}';
+  //   await context.push(route);
+  //   _load();
+  // }
+  //
+  // void _showAddPurchaseOptions() {
+  //   showModalBottomSheet<void>(
+  //     context: context,
+  //     backgroundColor: AppColors.surface,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusLg)),
+  //     ),
+  //     builder: (context) => SafeArea(
+  //       child: Padding(
+  //         padding: const EdgeInsets.all(AppSpacing.page),
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           crossAxisAlignment: CrossAxisAlignment.stretch,
+  //           children: [
+  //             Text(
+  //               'Add purchase',
+  //               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+  //             ),
+  //             const SizedBox(height: 12),
+  //             ListTile(
+  //               leading: const Icon(Icons.document_scanner_outlined, color: AppColors.primary),
+  //               title: const Text('Scan receipt'),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 _addPurchase(scan: true);
+  //               },
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(Icons.edit_note_outlined, color: AppColors.primary),
+  //               title: const Text('Enter manually'),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 _addPurchase(scan: false);
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +157,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
             message: 'Add purchase',
             child: FloatingActionButton(
               heroTag: 'purchase',
-              onPressed: _showAddPurchaseOptions,
+              onPressed: _addPurchase,
               child: const Icon(Icons.shopping_cart_outlined),
             ),
           ),
@@ -193,7 +199,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
                               icon: Icons.shopping_cart_outlined,
                               label: 'Add purchase',
                               filled: true,
-                              onTap: _showAddPurchaseOptions,
+                              onTap: _addPurchase,
                             ),
                           ),
                           const SizedBox(width: 12),

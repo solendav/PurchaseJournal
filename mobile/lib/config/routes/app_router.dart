@@ -13,7 +13,8 @@ import 'package:purchase_journal/features/purchases/presentation/pages/payment_d
 import 'package:purchase_journal/features/purchases/presentation/pages/purchase_detail_page.dart';
 import 'package:purchase_journal/features/purchases/presentation/pages/purchase_form_page.dart';
 import 'package:purchase_journal/features/purchases/presentation/pages/purchase_list_page.dart';
-import 'package:purchase_journal/features/purchases/presentation/pages/scan_receipt_page.dart';
+// Scan receipt — disabled until release build supports ML Kit R8.
+// import 'package:purchase_journal/features/purchases/presentation/pages/scan_receipt_page.dart';
 import 'package:purchase_journal/features/suppliers/presentation/pages/supplier_detail_page.dart';
 import 'package:purchase_journal/features/suppliers/presentation/pages/supplier_list_page.dart';
 
@@ -83,12 +84,13 @@ GoRouter createAppRouter(AuthSession authSession) {
           initialSupplierId: state.uri.queryParameters['supplierId'],
         ),
       ),
-      GoRoute(
-        path: RouteNames.purchaseScan,
-        builder: (context, state) => ScanReceiptPage(
-          initialSupplierId: state.uri.queryParameters['supplierId'],
-        ),
-      ),
+      // Scan receipt route — disabled until release build supports ML Kit R8.
+      // GoRoute(
+      //   path: RouteNames.purchaseScan,
+      //   builder: (context, state) => ScanReceiptPage(
+      //     initialSupplierId: state.uri.queryParameters['supplierId'],
+      //   ),
+      // ),
       GoRoute(
         path: '${RouteNames.purchaseDetail}/:id/edit',
         builder: (context, state) => PurchaseFormPage(purchaseId: state.pathParameters['id']!),

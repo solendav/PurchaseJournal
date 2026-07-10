@@ -80,19 +80,21 @@ class _DashboardTabState extends State<DashboardTab> {
                       const SizedBox(height: AppSpacing.section),
                       Row(
                         children: [
-                          Expanded(
-                            child: ActionChipButton(
-                              icon: Icons.document_scanner_outlined,
-                              label: 'Scan receipt',
-                              filled: true,
-                              onTap: () => context.push(RouteNames.purchaseScan),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
+                          // Scan receipt — disabled until release build supports ML Kit R8.
+                          // Expanded(
+                          //   child: ActionChipButton(
+                          //     icon: Icons.document_scanner_outlined,
+                          //     label: 'Scan receipt',
+                          //     filled: true,
+                          //     onTap: () => context.push(RouteNames.purchaseScan),
+                          //   ),
+                          // ),
+                          // const SizedBox(width: 12),
                           Expanded(
                             child: ActionChipButton(
                               icon: Icons.shopping_cart_outlined,
                               label: 'Add purchase',
+                              filled: true,
                               onTap: () => context.push(RouteNames.purchaseNew),
                             ),
                           ),

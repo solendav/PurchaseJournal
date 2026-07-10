@@ -92,20 +92,21 @@ class _PurchaseListPageState extends State<PurchaseListPage> with SingleTickerPr
                     child: const Icon(Icons.payments_outlined),
                   ),
                 ),
-                const SizedBox(height: 12),
-                Tooltip(
-                  message: 'Scan receipt',
-                  child: FloatingActionButton.small(
-                    heroTag: 'scan',
-                    backgroundColor: AppColors.surface,
-                    foregroundColor: AppColors.primary,
-                    onPressed: () async {
-                      await context.push(RouteNames.purchaseScan);
-                      if (mounted) _purchasesTabKey.currentState?.reload();
-                    },
-                    child: const Icon(Icons.document_scanner_outlined),
-                  ),
-                ),
+                // Scan receipt — disabled until release build supports ML Kit R8.
+                // const SizedBox(height: 12),
+                // Tooltip(
+                //   message: 'Scan receipt',
+                //   child: FloatingActionButton.small(
+                //     heroTag: 'scan',
+                //     backgroundColor: AppColors.surface,
+                //     foregroundColor: AppColors.primary,
+                //     onPressed: () async {
+                //       await context.push(RouteNames.purchaseScan);
+                //       if (mounted) _purchasesTabKey.currentState?.reload();
+                //     },
+                //     child: const Icon(Icons.document_scanner_outlined),
+                //   ),
+                // ),
                 const SizedBox(height: 12),
                 Tooltip(
                   message: 'Add purchase',
