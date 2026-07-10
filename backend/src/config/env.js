@@ -51,6 +51,13 @@ const env = {
   uploadDir: getEnv("UPLOAD_DIR", "uploads"),
   logLevel: getEnv("LOG_LEVEL", "info"),
   appPublicUrl: getEnv("APP_PUBLIC_URL", "http://localhost:5003"),
+  requireEmailVerification: getEnv("REQUIRE_EMAIL_VERIFICATION", "true") === "true",
+  smtpHost: getEnv("SMTP_HOST", ""),
+  smtpPort: Number(getEnv("SMTP_PORT", "587")),
+  smtpSecure: getEnv("SMTP_SECURE", "false") === "true",
+  smtpUser: getEnv("SMTP_USER", ""),
+  smtpPass: getEnv("SMTP_PASS", ""),
+  smtpFrom: getEnv("SMTP_FROM", "Purchase Journal <noreply@localhost>"),
 };
 
 module.exports = { env };

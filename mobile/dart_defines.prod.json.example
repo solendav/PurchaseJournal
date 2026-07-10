@@ -1,3 +1,4 @@
 {
-  "API_BASE_URL": "https://purchase-journal-backend.vercel.app/"
+  "API_BASE_URL": "https://purchase-journal-backend.vercel.app/",
+  "GITHUB_REPO": "solendav/PurchaseJournal-apk"
 }

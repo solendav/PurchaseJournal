@@ -3,7 +3,7 @@ const { hashPassword, comparePassword } = require("../utils/password");
 const { NotFoundError, ValidationError } = require("../utils/errors");
 
 const USER_COLUMNS =
-  "id, email, first_name, last_name, role, owner_id, created_at, updated_at";
+  "id, email, first_name, last_name, role, owner_id, email_verified_at, created_at, updated_at";
 
 function mapUser(row) {
   if (!row) return null;
@@ -14,6 +14,8 @@ function mapUser(row) {
     lastName: row.last_name,
     role: row.role || "owner",
     ownerId: row.owner_id || null,
+    emailVerified: Boolean(row.email_verified_at),
+    emailVerifiedAt: row.email_verified_at ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -73,8 +75,8 @@ async function createMember(ownerId, { email, password, firstName, lastName }) {
 
   const passwordHash = await hashPassword(password);
   const result = await pool.query(
-    `INSERT INTO users (email, password_hash, first_name, last_name, role, owner_id)
-     VALUES ($1, $2, $3, $4, 'member', $5)
+    `INSERT INTO users (email, password_hash, first_name, last_name, role, owner_id, email_verified_at)
+     VALUES ($1, $2, $3, $4, 'member', $5, NOW())
      RETURNING ${USER_COLUMNS}`,
     [normalizedEmail, passwordHash, firstName?.trim() || "", lastName?.trim() || "", ownerId]
   );
@@ -121,6 +123,31 @@ async function updateProfile(userId, { firstName, lastName }) {
   return mapUser(result.rows[0]);
 }
 
+async function markEmailVerified(userId) {
+  const result = await pool.query(
+    `UPDATE users SET email_verified_at = COALESCE(email_verified_at, NOW()), updated_at = NOW()
+     WHERE id = $1
+     RETURNING ${USER_COLUMNS}`,
+    [userId]
+  );
+  return mapUser(result.rows[0]);
+}
+
+async function setPassword(userId, password) {
+  const passwordHash = await hashPassword(password);
+  const result = await pool.query(
+    `UPDATE users SET
+       password_hash = $2,
+       password_changed_at = NOW(),
+       updated_at = NOW()
+     WHERE id = $1
+     RETURNING ${USER_COLUMNS}`,
+    [userId, passwordHash]
+  );
+  if (!result.rows[0]) throw new NotFoundError("User not found");
+  return mapUser(result.rows[0]);
+}
+
 module.exports = {
   mapUser,
   findByEmail,
@@ -131,4 +158,6 @@ module.exports = {
   listMembers,
   createMember,
   removeMember,
+  markEmailVerified,
+  setPassword,
 };

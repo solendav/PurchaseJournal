@@ -42,7 +42,9 @@ class _RegisterPageState extends State<RegisterPage> {
     );
     if (!mounted) return;
     if (ok) {
-      context.go(RouteNames.home);
+      context.go(
+        _auth.needsEmailVerification ? RouteNames.verifyEmail : RouteNames.home,
+      );
     }
   }
 

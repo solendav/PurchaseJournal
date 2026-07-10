@@ -14,6 +14,10 @@ class ApiConstants {
   static const authLogin = '/auth/login';
   static const authRefresh = '/auth/refresh';
   static const authMe = '/auth/me';
+  static const authVerifyEmail = '/auth/verify-email';
+  static const authResendVerification = '/auth/resend-verification';
+  static const authForgotPassword = '/auth/forgot-password';
+  static const authResetPassword = '/auth/reset-password';
   static const suppliers = '/suppliers';
   static const purchases = '/purchases';
   static const payments = '/payments';

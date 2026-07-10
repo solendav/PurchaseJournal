@@ -197,8 +197,11 @@ class _ErrorInterceptor extends Interceptor {
     }
     final status = err.response?.statusCode;
     final data = err.response?.data;
+    final code = data is Map ? data['code']?.toString() : null;
     final message = ErrorMessageMapper.extractApiErrorMessage(data) ?? 'Request failed';
-    if (status == 401) return AuthenticationException(message: message);
+    if (status == 401) {
+      return AuthenticationException(message: message, code: code);
+    }
     return ServerException(message: message, statusCode: status);
   }
 }

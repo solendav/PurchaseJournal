@@ -10,6 +10,17 @@ abstract class AuthRemoteDataSource {
     String firstName,
     String lastName,
   });
+  Future<Map<String, dynamic>> verifyEmail({
+    required String email,
+    required String code,
+  });
+  Future<String?> resendVerification({required String email});
+  Future<String?> forgotPassword({required String email});
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String password,
+  });
   Future<UserModel> getMe();
   Future<UserModel> updateProfile({
     String? firstName,
@@ -45,6 +56,49 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       'lastName': lastName,
     });
     return Map<String, dynamic>.from(response.data as Map);
+  }
+
+  @override
+  Future<Map<String, dynamic>> verifyEmail({
+    required String email,
+    required String code,
+  }) async {
+    final response = await _api.post(ApiConstants.authVerifyEmail, data: {
+      'email': email,
+      'code': code,
+    });
+    return Map<String, dynamic>.from(response.data as Map);
+  }
+
+  @override
+  Future<String?> resendVerification({required String email}) async {
+    final response = await _api.post(ApiConstants.authResendVerification, data: {
+      'email': email,
+    });
+    final data = response.data as Map<String, dynamic>;
+    return data['devCode'] as String?;
+  }
+
+  @override
+  Future<String?> forgotPassword({required String email}) async {
+    final response = await _api.post(ApiConstants.authForgotPassword, data: {
+      'email': email,
+    });
+    final data = response.data as Map<String, dynamic>;
+    return data['devCode'] as String?;
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String password,
+  }) async {
+    await _api.post(ApiConstants.authResetPassword, data: {
+      'email': email,
+      'code': code,
+      'password': password,
+    });
   }
 
   @override

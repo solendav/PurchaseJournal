@@ -16,5 +16,8 @@ class NetworkException extends AppException {
 }
 
 class AuthenticationException extends AppException {
-  const AuthenticationException({required String message}) : super(message);
+  const AuthenticationException({required String message, this.code}) : super(message);
+  final String? code;
+
+  bool get isEmailNotVerified => code == 'EMAIL_NOT_VERIFIED';
 }

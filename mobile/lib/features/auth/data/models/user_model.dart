@@ -6,6 +6,7 @@ class UserModel {
     required this.lastName,
     required this.role,
     required this.ownerId,
+    this.emailVerified = true,
   });
 
   final String id;
@@ -14,6 +15,7 @@ class UserModel {
   final String lastName;
   final String role;
   final String? ownerId;
+  final bool emailVerified;
 
   bool get isOwner => ownerId == null && role == 'owner';
 
@@ -30,6 +32,7 @@ class UserModel {
       lastName: json['lastName'] as String? ?? '',
       role: json['role'] as String? ?? 'owner',
       ownerId: json['ownerId'] as String?,
+      emailVerified: json['emailVerified'] as bool? ?? true,
     );
   }
 }

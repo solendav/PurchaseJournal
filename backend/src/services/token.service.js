@@ -1,8 +1,14 @@
 const { pool } = require("../db/pool");
-const { hashToken, generateRefreshToken } = require("../utils/crypto_tokens");
-const { AuthenticationError } = require("../utils/errors");
+const {
+  hashToken,
+  generateRefreshToken,
+  generateOtpCode,
+} = require("../utils/crypto_tokens");
+const { AuthenticationError, ValidationError } = require("../utils/errors");
 
 const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const EMAIL_VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 
 async function issueRefreshToken(userId, { userAgent = "", ipAddress = "" } = {}) {
   const token = generateRefreshToken();
@@ -77,4 +83,77 @@ async function revokeRefreshToken(rawToken) {
   );
 }
 
-module.exports = { issueRefreshToken, rotateRefreshToken, revokeRefreshToken };
+async function revokeAllRefreshTokens(userId) {
+  await pool.query(
+    `UPDATE refresh_tokens SET revoked_at = NOW()
+     WHERE user_id = $1 AND revoked_at IS NULL`,
+    [userId]
+  );
+}
+
+async function createOneTimeCode(userId, purpose) {
+  const ttl = purpose === "password_reset" ? PASSWORD_RESET_TTL_MS : EMAIL_VERIFY_TTL_MS;
+  const code = generateOtpCode();
+  const tokenHash = hashToken(code);
+  const expiresAt = new Date(Date.now() + ttl);
+
+  await pool.query(
+    `UPDATE auth_one_time_tokens
+     SET used_at = NOW()
+     WHERE user_id = $1 AND purpose = $2 AND used_at IS NULL`,
+    [userId, purpose]
+  );
+
+  await pool.query(
+    `INSERT INTO auth_one_time_tokens (user_id, token_hash, purpose, expires_at)
+     VALUES ($1, $2, $3, $4)`,
+    [userId, tokenHash, purpose, expiresAt.toISOString()]
+  );
+
+  return { code, expiresAt: expiresAt.toISOString() };
+}
+
+async function consumeOneTimeCode(userId, purpose, code) {
+  if (!code || String(code).trim().length < 4) {
+    throw new ValidationError("Invalid code");
+  }
+
+  const tokenHash = hashToken(String(code).trim());
+  const result = await pool.query(
+    `UPDATE auth_one_time_tokens
+     SET used_at = NOW()
+     WHERE user_id = $1
+       AND purpose = $2
+       AND token_hash = $3
+       AND used_at IS NULL
+       AND expires_at > NOW()
+     RETURNING id`,
+    [userId, purpose, tokenHash]
+  );
+
+  if (result.rows.length === 0) {
+    throw new ValidationError("Invalid or expired code");
+  }
+}
+
+async function consumeOneTimeCodeByEmail(email, purpose, code) {
+  const userResult = await pool.query(`SELECT id FROM users WHERE email = $1`, [
+    email.toLowerCase().trim(),
+  ]);
+  const user = userResult.rows[0];
+  if (!user) {
+    throw new ValidationError("Invalid or expired code");
+  }
+  await consumeOneTimeCode(user.id, purpose, code);
+  return user.id;
+}
+
+module.exports = {
+  issueRefreshToken,
+  rotateRefreshToken,
+  revokeRefreshToken,
+  revokeAllRefreshTokens,
+  createOneTimeCode,
+  consumeOneTimeCode,
+  consumeOneTimeCodeByEmail,
+};

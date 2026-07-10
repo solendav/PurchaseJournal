@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:purchase_journal/config/themes/app_colors.dart';
 import 'package:purchase_journal/core/constants/app_constants.dart';
 
@@ -232,6 +233,7 @@ class AuthTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType,
     this.validator,
+    this.inputFormatters,
   });
 
   final TextEditingController controller;
@@ -242,6 +244,7 @@ class AuthTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -250,6 +253,7 @@ class AuthTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,

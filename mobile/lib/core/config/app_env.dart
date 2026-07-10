@@ -19,4 +19,10 @@ class AppEnv {
     }
     return 'http://localhost:5003';
   }
+
+  /// Public GitHub `owner/repo` used to check releases for in-app updates.
+  static const String githubRepo = String.fromEnvironment(
+    'GITHUB_REPO',
+    defaultValue: 'solendav/PurchaseJournal-apk',
+  );
 }

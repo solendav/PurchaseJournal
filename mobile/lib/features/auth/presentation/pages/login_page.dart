@@ -33,7 +33,14 @@ class _LoginPageState extends State<LoginPage> {
     final ok = await _auth.login(_email.text.trim(), _password.text);
     if (!mounted) return;
     if (ok) {
-      context.go(RouteNames.home);
+      context.go(
+        _auth.needsEmailVerification ? RouteNames.verifyEmail : RouteNames.home,
+      );
+      return;
+    }
+    if (_auth.errorCode == 'EMAIL_NOT_VERIFIED') {
+      final email = Uri.encodeComponent(_email.text.trim());
+      context.go('${RouteNames.verifyEmail}?email=$email');
     }
   }
 
@@ -91,7 +98,14 @@ class _LoginPageState extends State<LoginPage> {
                   isLoading: isBusy,
                   onPressed: isBusy ? null : _submit,
                 ),
-                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: isBusy ? null : () => context.push(RouteNames.forgotPassword),
+                    child: const Text('Forgot password?'),
+                  ),
+                ),
+                const SizedBox(height: 4),
                 TextButton(
                   onPressed: isBusy ? null : () => context.push(RouteNames.register),
                   child: const Text("Don't have an account? Create one"),

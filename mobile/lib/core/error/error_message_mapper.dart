@@ -19,7 +19,7 @@ class ErrorMessageMapper {
     }
 
     if (error is AuthenticationException) {
-      return _friendlyAuthMessage(error.message);
+      return _friendlyAuthMessage(error.message, code: error.code);
     }
     if (error is ServerException) {
       return _sanitize(error.message, defaultFallback);
@@ -34,13 +34,25 @@ class ErrorMessageMapper {
     return _sanitize(error.toString(), defaultFallback);
   }
 
+  static AuthenticationException? asAuthenticationException(Object error) {
+    if (error is AuthenticationException) return error;
+    if (error is DioException && error.error is AuthenticationException) {
+      return error.error as AuthenticationException;
+    }
+    return null;
+  }
+
   static String _fromDio(DioException error, String fallback) {
     final data = error.response?.data;
     final apiMessage = extractApiErrorMessage(data);
+    final code = data is Map ? data['code']?.toString() : null;
     final status = error.response?.statusCode;
 
-    if (status == 401) {
-      return _friendlyAuthMessage(apiMessage ?? credentialsMismatch);
+    if (status == 401 || code == 'EMAIL_NOT_VERIFIED') {
+      return _friendlyAuthMessage(
+        apiMessage ?? credentialsMismatch,
+        code: code,
+      );
     }
 
     if (apiMessage != null) {
@@ -95,8 +107,11 @@ class ErrorMessageMapper {
     return null;
   }
 
-  static String _friendlyAuthMessage(String raw) {
+  static String _friendlyAuthMessage(String raw, {String? code}) {
     final lower = raw.toLowerCase();
+    if (code == 'EMAIL_NOT_VERIFIED' || lower.contains('verify your email')) {
+      return 'Please verify your email before signing in.';
+    }
     if (lower.contains('invalid email or password') ||
         lower.contains('email or password') ||
         lower.contains('authentication failed') ||
