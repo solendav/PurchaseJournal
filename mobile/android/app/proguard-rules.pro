@@ -1,9 +1,4 @@
-# ML Kit text recognition — optional script modules not bundled in release builds.
--dontwarn com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions$Builder
--dontwarn com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
--dontwarn com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions$Builder
--dontwarn com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
--dontwarn com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions$Builder
--dontwarn com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
--dontwarn com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions$Builder
--dontwarn com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
+# Google ML Kit — optional script modules (Chinese/Japanese/Korean/Devanagari) are not bundled;
+# receipt OCR uses Latin only. Required for release R8 minification.
+-dontwarn com.google.mlkit.**
+-keep class com.google.mlkit.** { *; }
