@@ -37,19 +37,22 @@ The workflow always injects `GITHUB_REPO` from `RELEASES_REPO` so in-app updates
 
 ## Publish a release
 
+The workflow builds the **commit that triggered it**, not always the latest `main`. If a tag was created before ML Kit was removed, create a new tag on the latest commit.
+
 ### Automated (recommended)
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git pull origin main
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
-Or: **Actions** → **Release APK** → **Run workflow**.
+Or: **Actions** → **Release APK** → **Run workflow** → branch **main**.
 
 Download URL after publish:
 
 ```
-https://github.com/solendav/PurchaseJournal-apk/releases/download/v1.0.0/purchasejournal.apk
+https://github.com/solendav/PurchaseJournal-apk/releases/download/v1.0.1/purchasejournal.apk
 ```
 
 ### Manual fallback

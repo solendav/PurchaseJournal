@@ -39,6 +39,18 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      - name: Verify release build prerequisites
+        run: |
+          echo "Building commit: $(git rev-parse --short HEAD)"
+          if grep -E '^[[:space:]]*google_mlkit' pubspec.yaml 2>/dev/null; then
+            echo "::error::google_mlkit is still in pubspec.yaml. Push the commit that removes it, then re-tag or re-run this workflow on main."
+            exit 1
+          fi
+          if grep -qi google_mlkit pubspec.lock 2>/dev/null; then
+            echo "::error::google_mlkit is still in pubspec.lock. Run 'flutter pub get' locally and push pubspec.lock."
+            exit 1
+          fi
+
       - name: Resolve release tag
         id: meta
         working-directory: .
