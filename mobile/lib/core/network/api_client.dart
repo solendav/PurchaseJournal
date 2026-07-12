@@ -193,7 +193,9 @@ class _ErrorInterceptor extends Interceptor {
 
   AppException _map(DioException err) {
     if (err.type == DioExceptionType.connectionError) {
-      return const NetworkException(message: 'No internet connection');
+      return const NetworkException(
+        message: 'Cannot reach the server. Check your connection or try again later.',
+      );
     }
     final status = err.response?.statusCode;
     final data = err.response?.data;

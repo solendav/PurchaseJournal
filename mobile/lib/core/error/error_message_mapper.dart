@@ -65,7 +65,7 @@ class ErrorMessageMapper {
       case DioExceptionType.receiveTimeout:
         return 'Connection timed out. Please try again.';
       case DioExceptionType.connectionError:
-        return 'No internet connection. Please check your network.';
+        return 'Cannot reach the server. Check your connection or try again later.';
       case DioExceptionType.badResponse:
         if (status == 403) return 'You do not have permission to do that.';
         if (status == 404) return 'The requested item was not found.';
