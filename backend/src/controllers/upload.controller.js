@@ -5,8 +5,12 @@ const crypto = require("crypto");
 const { env } = require("../config/env");
 const { ok } = require("../utils/response");
 const { ValidationError, NotFoundError } = require("../utils/errors");
+const cloudinaryService = require("../services/cloudinary.service");
+const { isServerless } = require("../utils/serverless");
 
 function getReceiptDir() {
+  if (isServerless()) return null;
+
   const root = path.resolve(process.cwd(), env.uploadDir, "receipts");
   if (!fs.existsSync(root)) {
     fs.mkdirSync(root, { recursive: true });
@@ -14,7 +18,7 @@ function getReceiptDir() {
   return root;
 }
 
-const storage = multer.diskStorage({
+const diskStorage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, getReceiptDir());
   },
@@ -27,7 +31,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage,
+  storage: isServerless() ? multer.memoryStorage() : diskStorage,
   limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if (!file.mimetype.startsWith("image/")) {
@@ -55,6 +59,22 @@ async function uploadReceipt(req, res, next) {
       throw new ValidationError("Receipt image is required");
     }
 
+    if (isServerless() || env.cloudinaryCloudName) {
+      const result = await cloudinaryService.uploadReceiptBuffer(req.file.buffer ?? fs.readFileSync(req.file.path), {
+        userId: req.userId,
+        originalname: req.file.originalname,
+      });
+
+      return ok(res, {
+        path: result.secure_url,
+        url: result.secure_url,
+        filename: result.public_id,
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimeType: req.file.mimetype,
+      });
+    }
+
     const relativePath = path.posix.join("receipts", req.file.filename);
     const url = `${env.appPublicUrl.replace(/\/$/, "")}/uploads/${relativePath}`;
 
@@ -67,14 +87,22 @@ async function uploadReceipt(req, res, next) {
       mimeType: req.file.mimetype,
     });
   } catch (err) {
+    if (err.http_code) {
+      return next(new ValidationError(err.message || "Cloudinary upload failed"));
+    }
     return next(err);
   }
 }
 
 function serveUpload(req, res, next) {
   try {
+    const receiptDir = getReceiptDir();
+    if (!receiptDir) {
+      return res.status(404).json({ success: false, error: "File not found" });
+    }
+
     const filename = path.basename(req.params.filename);
-    const filePath = path.join(getReceiptDir(), filename);
+    const filePath = path.join(receiptDir, filename);
     if (!fs.existsSync(filePath)) {
       throw new NotFoundError("File not found");
     }
@@ -84,4 +112,4 @@ function serveUpload(req, res, next) {
   }
 }
 
-module.exports = { uploadReceiptMiddleware, uploadReceipt, serveUpload };
+module.exports = { uploadReceiptMiddleware, uploadReceipt, serveUpload, getReceiptDir };

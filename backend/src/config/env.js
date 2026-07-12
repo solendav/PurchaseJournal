@@ -58,6 +58,11 @@ const env = {
   smtpUser: getEnv("SMTP_USER", ""),
   smtpPass: getEnv("SMTP_PASS", ""),
   smtpFrom: getEnv("SMTP_FROM", "Purchase Journal <noreply@localhost>"),
+  uploadDir: getEnv("UPLOAD_DIR", "uploads"),
+  cloudinaryCloudName: getEnv("CLOUDINARY_CLOUD_NAME", ""),
+  cloudinaryApiKey: getEnv("CLOUDINARY_API_KEY", ""),
+  cloudinaryApiSecret: getEnv("CLOUDINARY_API_SECRET", ""),
+  cloudinaryFolder: getEnv("CLOUDINARY_FOLDER", "purchase-journal"),
 };
 
 module.exports = { env };

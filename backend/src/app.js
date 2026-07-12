@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const pinoHttp = require("pino-http");
 
 const { env } = require("./config/env");
@@ -12,7 +11,7 @@ const {
   apiLimiter,
   compressionMiddleware,
 } = require("./middlewares/security.middleware");
-const { uploadRoot } = require("./services/upload.service");
+const { getReceiptDir } = require("./controllers/upload.controller");
 
 const app = express();
 
@@ -55,7 +54,10 @@ app.use(
   })
 );
 
-app.use("/uploads", express.static(path.resolve(uploadRoot)));
+const receiptDir = getReceiptDir();
+if (receiptDir) {
+  app.use("/uploads/receipts", express.static(receiptDir));
+}
 
 app.use("/api", apiLimiter);
 app.use("/api", router);
@@ -77,3 +79,4 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 module.exports = app;
+module.exports.app = app;
